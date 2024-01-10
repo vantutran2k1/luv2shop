@@ -20,14 +20,19 @@ export class ProductService {
     );
   }
 
-  getProductsByCategory(currentCategoryId: number): Observable<Product[]> {
-    const searchUrl = `${this.productBaseUrl}/search/findByCategoryId?id=${currentCategoryId}`
+  getProductsByCategoryId(categoryId: number): Observable<Product[]> {
+    const searchUrl = `${this.productBaseUrl}/search/findByCategoryId?id=${categoryId}`;
     return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
       map(response => response._embedded.products)
     );
   }
 
-  getProductCategories(): Observable<ProductCategory[]> {
+  getCategoryById(categoryId: number): Observable<ProductCategory> {
+    const searchUrl = `${this.categoryBaseUrl}/${categoryId}`;
+    return this.httpClient.get<ProductCategory>(searchUrl);
+  }
+
+  getAllCategories(): Observable<ProductCategory[]> {
     return this.httpClient.get<GetResponseProductCategories>(this.categoryBaseUrl).pipe(
       map(response => response._embedded.productCategories)
     );
