@@ -15,6 +15,9 @@ export class ProductListComponent implements OnInit {
   currentCategoryId: number = 0;
   currentCategoryName: string = '';
 
+  hasKeyword: boolean = false;
+  currentKeyword: string = '';
+
   constructor(private productService: ProductService, private route: ActivatedRoute) {
   }
 
@@ -25,24 +28,43 @@ export class ProductListComponent implements OnInit {
 
   listProducts() {
     this.hasCategoryId = this.route.snapshot.paramMap.has('id');
-    if (this.hasCategoryId) {
-      this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+    this.hasKeyword = this.route.snapshot.paramMap.has('keyword');
 
-      this.productService.getCategoryById(this.currentCategoryId).subscribe(
-        category => this.currentCategoryName = category.categoryName
-      );
+    if (this.hasCategoryId)
+      this.listProductsByCategory();
+    else if (this.hasKeyword)
+      this.listProductsByKeyword();
+    else
+      this.listAllProducts();
+  }
 
-      this.productService.getProductsByCategoryId(this.currentCategoryId).subscribe(
-        data => {
-          this.products = data
-        }
-      );
-    } else {
-      this.productService.getAllProducts().subscribe(
-        data => {
-          this.products = data
-        }
-      );
-    }
+  private listAllProducts() {
+    this.productService.getAllProducts().subscribe(
+      data => {
+        this.products = data
+      }
+    );
+  }
+
+  private listProductsByKeyword() {
+    this.currentKeyword = this.route.snapshot.paramMap.get('keyword')!;
+
+    this.productService.getProductsByNameContainingKeyword(this.currentKeyword).subscribe(
+      products => this.products = products
+    );
+  }
+
+  private listProductsByCategory() {
+    this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+
+    this.productService.getCategoryById(this.currentCategoryId).subscribe(
+      category => this.currentCategoryName = category.categoryName
+    );
+
+    this.productService.getProductsByCategoryId(this.currentCategoryId).subscribe(
+      products => {
+        this.products = products
+      }
+    );
   }
 }
