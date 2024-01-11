@@ -40,9 +40,7 @@ export class ProductListComponent implements OnInit {
 
   private listAllProducts() {
     this.productService.getAllProducts().subscribe(
-      data => {
-        this.products = data
-      }
+      products => this.products = products
     );
   }
 
@@ -62,9 +60,7 @@ export class ProductListComponent implements OnInit {
     );
 
     this.productService.getProductsByCategoryId(this.currentCategoryId).subscribe(
-      products => {
-        this.products = products
-      }
+      products => this.products = products
     );
   }
 }
