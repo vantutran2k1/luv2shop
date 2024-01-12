@@ -12,11 +12,17 @@ export class ProductListComponent implements OnInit {
   products: Product[] = [];
 
   hasCategoryId: boolean = false;
+  previousCategoryId: number = 0;
   currentCategoryId: number = 0;
   currentCategoryName: string = '';
 
   hasKeyword: boolean = false;
+  previousKeyword: string = '';
   currentKeyword: string = '';
+
+  pageNumber: number = 1;
+  pageSize: number = 5;
+  totalElements: number = 0;
 
   constructor(private productService: ProductService, private route: ActivatedRoute) {
   }
@@ -38,18 +44,31 @@ export class ProductListComponent implements OnInit {
       this.listAllProducts();
   }
 
+  updatePageSize(pageSize: string) {
+    this.pageSize = +pageSize;
+    this.pageNumber = 1;
+    this.listProducts();
+  }
+
   private listAllProducts() {
-    this.productService.getAllProducts().subscribe(
-      products => this.products = products
-    );
+    this.productService.getAllProducts(
+      this.pageNumber - 1,
+      this.pageSize
+    ).subscribe(this.processProductsResult());
   }
 
   private listProductsByKeyword() {
     this.currentKeyword = this.route.snapshot.paramMap.get('keyword')!;
 
-    this.productService.getProductsByNameContainingKeyword(this.currentKeyword).subscribe(
-      products => this.products = products
-    );
+    if (this.previousKeyword != this.currentKeyword)
+      this.pageNumber = 1;
+    this.previousKeyword = this.currentKeyword;
+
+    this.productService.getProductsByNameContainingKeyword(
+      this.currentKeyword,
+      this.pageNumber - 1,
+      this.pageSize
+    ).subscribe(this.processProductsResult());
   }
 
   private listProductsByCategory() {
@@ -59,8 +78,23 @@ export class ProductListComponent implements OnInit {
       category => this.currentCategoryName = category.categoryName
     );
 
-    this.productService.getProductsByCategoryId(this.currentCategoryId).subscribe(
-      products => this.products = products
-    );
+    if (this.previousCategoryId != this.currentCategoryId)
+      this.pageNumber = 1;
+    this.previousCategoryId = this.currentCategoryId;
+
+    this.productService.getProductsByCategoryId(
+      this.currentCategoryId,
+      this.pageNumber - 1,
+      this.pageSize
+    ).subscribe(this.processProductsResult());
+  }
+
+  private processProductsResult() {
+    return (data: any) => {
+      this.products = data._embedded.products;
+      this.pageNumber = data.page.number + 1;
+      this.pageSize = data.page.size;
+      this.totalElements = data.page.totalElements;
+    }
   }
 }

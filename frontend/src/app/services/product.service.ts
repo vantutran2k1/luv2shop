@@ -18,16 +18,21 @@ export class ProductService {
     return this.httpClient.get<Product>(`${this.productBaseUrl}/${productId}`);
   }
 
-  getAllProducts(): Observable<Product[]> {
-    return this.getProductsFromUrl(this.productBaseUrl);
+  getAllProducts(pageNumber: number, pageSize: number): Observable<GetResponseProducts> {
+    const searchUrl: string = `${this.productBaseUrl}?page=${pageNumber}&size=${pageSize}`
+    return this.getResponseProductsFromUrl(searchUrl);
   }
 
-  getProductsByCategoryId(categoryId: number): Observable<Product[]> {
-    return this.getProductsFromUrl(`${this.productBaseUrl}/search/findByCategoryId?id=${categoryId}`);
+  getProductsByCategoryId(categoryId: number, pageNumber: number, pageSize: number): Observable<GetResponseProducts> {
+    const searchUrl: string = `${this.productBaseUrl}/search/findByCategoryId?id=${categoryId}`
+      + `&page=${pageNumber}&size=${pageSize}`;
+    return this.getResponseProductsFromUrl(searchUrl);
   }
 
-  getProductsByNameContainingKeyword(keyword: string): Observable<Product[]> {
-    return this.getProductsFromUrl(`${this.productBaseUrl}/search/findByNameContaining?name=${keyword}`);
+  getProductsByNameContainingKeyword(keyword: string, pageNumber: number, pageSize: number): Observable<GetResponseProducts> {
+    const searchUrl: string = `${this.productBaseUrl}/search/findByNameContaining?name=${keyword}`
+      + `&page=${pageNumber}&size=${pageSize}`;
+    return this.getResponseProductsFromUrl(searchUrl);
   }
 
   getCategoryById(categoryId: number): Observable<ProductCategory> {
@@ -40,16 +45,20 @@ export class ProductService {
     );
   }
 
-  private getProductsFromUrl(searchUrl: string): Observable<Product[]> {
-    return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
-      map(response => response._embedded.products)
-    );
+  private getResponseProductsFromUrl(searchUrl: string): Observable<GetResponseProducts> {
+    return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 }
 
 interface GetResponseProducts {
   _embedded: {
     products: Product[];
+  },
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number
   }
 }
 
