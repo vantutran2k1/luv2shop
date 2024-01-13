@@ -35,4 +35,20 @@ export class CartService {
     this.totalPrice.next(totalPriceValue);
     this.totalQuantity.next(totalQuantityValue);
   }
+
+  decrementQuantity(item: CartItem) {
+    item.quantity--;
+    if (item.quantity === 0)
+      this.remove(item);
+    else
+      this.computeCartTotals();
+  }
+
+  remove(item: CartItem) {
+    const index = this.cartItems.findIndex(cartItem => cartItem.id === item.id);
+    if (index > -1) {
+      this.cartItems.splice(index, 1);
+      this.computeCartTotals();
+    }
+  }
 }
