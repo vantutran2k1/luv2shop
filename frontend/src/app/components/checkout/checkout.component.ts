@@ -80,10 +80,13 @@ export class CheckoutComponent implements OnInit {
       this.checkoutFormGroup.controls["billingAddress"].setValue(
         this.checkoutFormGroup.controls['shippingAddress'].value
       );
+
       this.billingAddressStates = this.shippingAddressStates;
+      this.checkoutFormGroup.get('billingAddress')?.disable();
     } else {
       this.checkoutFormGroup.controls["billingAddress"].reset();
       this.billingAddressStates = [];
+      this.checkoutFormGroup.get('billingAddress')?.enable();
     }
   }
 
