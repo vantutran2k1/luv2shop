@@ -1,9 +1,6 @@
 package com.tutran.backend.api.config;
 
-import com.tutran.backend.api.entity.Country;
-import com.tutran.backend.api.entity.Product;
-import com.tutran.backend.api.entity.ProductCategory;
-import com.tutran.backend.api.entity.State;
+import com.tutran.backend.api.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,7 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethods(ProductCategory.class, config, unsupportedMethods);
         disableHttpMethods(Country.class, config, unsupportedMethods);
         disableHttpMethods(State.class, config, unsupportedMethods);
+        disableHttpMethods(Order.class, config, unsupportedMethods);
 
         exposeIds(config);
 

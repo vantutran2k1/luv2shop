@@ -30,6 +30,8 @@ export class CheckoutComponent implements OnInit {
   shippingAddressStates: State[] = [];
   billingAddressStates: State[] = [];
 
+  storage: Storage = localStorage;
+
   constructor(
     private formBuilder: FormBuilder,
     private checkoutFormService: CheckoutFormService,
@@ -236,7 +238,7 @@ export class CheckoutComponent implements OnInit {
     purchase.billingAddress.country = billingCountry.name;
 
     purchase.order = new Order(this.totalQuantity, this.totalPrice);
-    
+
     purchase.orderItems = this.cartService.cartItems.map(item => new OrderItem(item));
 
     this.checkoutService.placeOrder(purchase).subscribe(
@@ -303,6 +305,8 @@ export class CheckoutComponent implements OnInit {
     this.cartService.totalQuantity.next(0);
 
     this.checkoutFormGroup.reset();
+
+    this.storage.removeItem('cartItems');
 
     this.router.navigateByUrl('/products');
   }
