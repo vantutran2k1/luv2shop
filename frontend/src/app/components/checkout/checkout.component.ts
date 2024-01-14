@@ -31,6 +31,7 @@ export class CheckoutComponent implements OnInit {
   billingAddressStates: State[] = [];
 
   storage: Storage = sessionStorage;
+  localStorage: Storage = localStorage;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -308,7 +309,7 @@ export class CheckoutComponent implements OnInit {
 
     this.checkoutFormGroup.reset();
 
-    this.storage.removeItem('cartItems');
+    this.localStorage.removeItem('cartItems');
 
     this.router.navigateByUrl('/products');
   }
