@@ -3,6 +3,7 @@ import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/com
 import {from, lastValueFrom, Observable} from "rxjs";
 import {OKTA_AUTH} from "@okta/okta-angular";
 import {OktaAuth} from "@okta/okta-auth-js";
+import {environment} from "../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class AuthInterceptorService implements HttpInterceptor {
   }
 
   private async handleAccess(req: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
-    const securedEndpoints = ['http://localhost:8080/api/orders'];
+    const securedEndpoints = [environment.apiUrl + '/orders'];
     if (securedEndpoints.some(url => req.urlWithParams.includes(url))) {
       const accessToken = this.oktaAuth.getAccessToken();
       req = req.clone({
