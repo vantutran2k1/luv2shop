@@ -90,6 +90,7 @@ export class CheckoutComponent implements OnInit {
 
     this.paymentInfo.amount = Math.round(this.totalPrice * 100);
     this.paymentInfo.currency = 'USD';
+    this.paymentInfo.receiptEmail = purchase.customer.email;
 
     if (!this.checkoutFormGroup.invalid && this.displayError.textContent === '')
       this.createPaymentIntent(purchase);
