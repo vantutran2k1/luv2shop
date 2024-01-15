@@ -38,6 +38,8 @@ export class CheckoutComponent implements OnInit {
   cardElement: any;
   displayError: any = '';
 
+  isDisabled: boolean = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private checkoutFormService: CheckoutFormService,
@@ -194,6 +196,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   private createPaymentIntent(purchase: Purchase) {
+    this.isDisabled = true;
+
     this.checkoutService.createPaymentIntent(this.paymentInfo).subscribe(
       paymentIntentResponse => {
         this.stripe.confirmCardPayment(
@@ -216,15 +220,20 @@ export class CheckoutComponent implements OnInit {
           },
           {handleActions: false}
         ).then((result: any) => {
-          if (result.error)
+          if (result.error) {
             alert(`There was an error: ${result.error.message}`);
-          else
+            this.isDisabled = false;
+          } else
             this.checkoutService.placeOrder(purchase).subscribe({
               next: (response: any) => {
                 alert(`Your order has been received.\nOrder tracking number: ${response.orderTrackingNumber}`);
                 this.resetCart();
+                this.isDisabled = false;
               },
-              error: (err: any) => alert(`There was an error: ${err.message}`)
+              error: (err: any) => {
+                alert(`There was an error: ${err.message}`);
+                this.isDisabled = false;
+              }
             });
         })
       }
